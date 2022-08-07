@@ -8,6 +8,9 @@ window.onload = () => {
    * resolve:
    * deve criar uma session que não seja pra cada task mas sim
    * universal pra cada usuario onde reseta com o reset
+   *
+   * Aviso: após alterar manualmente o tempo para pausa e clicar em pausa
+   * não deve realterar o modo apenas continuar ou skipar
    */
   const buttonSound = new Audio('/assets/songs/button-sound.mp3')
   const sdBtnStart = new Audio('/assets/songs/start.mp3')
@@ -25,39 +28,23 @@ window.onload = () => {
   const mainButtonBtn = document.querySelector('#js-btn')
   const skipBtn = document.getElementById('skipBtn')
   const working = document.querySelector('#working')
-  const addTodayPomodorie = document.getElementById(
-    'addTodayPomodorie'
-  )
+  const addTodayPomodorie = document.getElementById('addTodayPomodorie')
   const addTodayPomodorieInput = document.getElementById(
-    'addTodayPomodorieInput'
+    'addTodayPomodorieInput',
   )
   const resetPomodories = document.getElementById('resetPomodories')
-  const resetPomodoriesInput = document.getElementById(
-    'resetPomodorieInput'
-  )
-  const deletePomodories = document.getElementById(
-    'deletePomodories'
-  )
-  const deletePomodoriesInput = document.getElementById(
-    'deletePomodorieInput'
-  )
-  const btnResetPomodories = document.getElementById(
-    'btnResetPomodorie'
-  )
+  const resetPomodoriesInput = document.getElementById('resetPomodorieInput')
+  const deletePomodories = document.getElementById('deletePomodories')
+  const deletePomodoriesInput = document.getElementById('deletePomodorieInput')
+  const btnResetPomodories = document.getElementById('btnResetPomodorie')
   const tasks = document.querySelectorAll('.task')
-  const workingPomodories = document.getElementById(
-    'workingPomodories'
-  )
+  const workingPomodories = document.getElementById('workingPomodories')
   const workingRealized = document.getElementById('workingRealized')
   const workingSession = document.getElementById('workingSession')
   const timerEndIn = document.getElementById('timerEndIn')
   const timerEndInHour = document.getElementById('timerEndInHour')
-  const timerEndInMinutes = document.getElementById(
-    'timerEndInMinutes'
-  )
-  const timerEndInSession = document.getElementById(
-    'timerEndInSession'
-  )
+  const timerEndInMinutes = document.getElementById('timerEndInMinutes')
+  const timerEndInSession = document.getElementById('timerEndInSession')
   const myVideo = document.getElementById('myVideo')
   const srcBackground = document.getElementById('srcBackground')
   const containerTimer = document.getElementById('container_timer')
@@ -73,7 +60,7 @@ window.onload = () => {
       longBreak = 15,
       longBreakInterval = 4,
       sessions = 0,
-      dinner = 30
+      dinner = 30,
     ) {
       this.timer = {
         pomodoroMs: pomodoro * 60000,
@@ -105,49 +92,44 @@ window.onload = () => {
 
               var hDisplay = h > 0 ? h + 'h' : ''
               var mDisplay = m > 0 ? m + 'm' : ''
-              var sDisplay =
-                s > 0 ? s + (s == 1 ? ' second' : ' seconds') : ''
+              var sDisplay = s > 0 ? s + (s == 1 ? ' second' : ' seconds') : ''
               return hDisplay + mDisplay
             }
             if (e > 0) {
-              balancePostive.style.color =
-                'rgba(105, 246, 224, 0.7)'
+              balancePostive.style.color = 'rgba(105, 246, 224, 0.7)'
               balanceNegative.style.color = 'rgba(0, 0, 0, 0)'
 
               balancePostive.innerHTML = format(e) + '+'
             } else if (e < 0) {
-              balanceNegative.style.color =
-                'rgba(255, 148, 54, 0.7)'
+              balanceNegative.style.color = 'rgba(255, 148, 54, 0.7)'
               balancePostive.style.color = 'rgba(0, 0, 0, 0)'
               balanceNegative.innerHTML = '-' + format(Math.abs(e))
             } else {
-              balanceNegative.style.color =
-                'rgba(255, 148, 54, 0.7)'
-              balancePostive.style.color =
-                'rgba(105, 246, 224, 0.7)'
+              balanceNegative.style.color = 'rgba(255, 148, 54, 0.7)'
+              balancePostive.style.color = 'rgba(105, 246, 224, 0.7)'
               balancePostive.innerHTML = '-'
               balanceNegative.innerHTML = '-'
             }
           },
         },
       })
-      // Object.defineProperty(this.timer, 'sessions', {
-      //   get: function () {
-      //     if (workingSession.value) {
-      //       return parseInt(workingSession.value)
-      //     } else {
-      //       return sessions
-      //     }
-      //   },
-      //   set: function (e) {
-      //     // if (workingSession.value) {
-      //     //   const n = parseInt(workingSession.value)
-      //     //   return (workingSession.value = n + 1)
-      //     // } else {
-      //     //   return sessions++
-      //     // }
-      //   },
-      // })
+      Object.defineProperty(this.timer, 'sessions', {
+        // get: function () {
+        //   if (workingSession.value) {
+        //     return parseInt(workingSession.value)
+        //   } else {
+        //     return sessions
+        //   }
+        // },
+        // set: function (e) {
+        //   if (workingSession.value) {
+        //     const n = parseInt(workingSession.value)
+        //     return (workingSession.value = n + 1)
+        //   } else {
+        //     return sessions++
+        //   }
+        // },
+      })
     }
 
     endsIn() {
@@ -155,12 +137,8 @@ window.onload = () => {
       let isEnd
       for (let task of tasks) {
         const idTask = task.getAttribute('_id')
-        const estimed = document.getElementById(
-          `tasksPomodories_${idTask}`
-        )
-        const realized = document.getElementById(
-          `tasksRealized_${idTask}`
-        )
+        const estimed = document.getElementById(`tasksPomodories_${idTask}`)
+        const realized = document.getElementById(`tasksRealized_${idTask}`)
         if (realized < estimed) notCompleted.push(idTask)
       }
       if (notCompleted.length === 1) isEnd = notCompleted[0]
@@ -169,17 +147,14 @@ window.onload = () => {
       for (let task of tasks) {
         const idTask = task.getAttribute('_id')
         const estimed = parseInt(
-          document.getElementById(`tasksPomodories_${idTask}`)
-            .textContent
+          document.getElementById(`tasksPomodories_${idTask}`).textContent,
         )
         const realized = parseInt(
-          document.getElementById(`tasksRealized_${idTask}`)
-            .textContent
+          document.getElementById(`tasksRealized_${idTask}`).textContent,
         )
         let End = false
         if (isEnd) if (isEnd === idTask) End = true
-        totalMinutes =
-          totalMinutes + this.calculesEnd(estimed, realized, End)
+        totalMinutes = totalMinutes + this.calculesEnd(estimed, realized, End)
       }
       const date = new Date()
 
@@ -268,7 +243,7 @@ window.onload = () => {
           isTasksDiary = true
           tasksDiary.push(task.getAttribute('_id')) //db
           const realized = document.getElementById(
-            `tasksRealized_${task.getAttribute('_id')}`
+            `tasksRealized_${task.getAttribute('_id')}`,
           )
           realized.textContent = 0
         } else if (task.getAttribute('isDiary') === 'no') {
@@ -297,9 +272,7 @@ window.onload = () => {
       if (idTask) {
         addTodayPomodorieInput.value = idTask
         addTodayPomodorie.submit() //db
-        const realized = document.getElementById(
-          `tasksRealized_${idTask}`
-        )
+        const realized = document.getElementById(`tasksRealized_${idTask}`)
         let number = realized.textContent
         number = parseInt(number)
         realized.textContent = number + 1
@@ -333,11 +306,7 @@ window.onload = () => {
               this.timer.sessions++
               this.addTodayPomodorie()
               containerTimer.setAttribute('breakRequired', 'true')
-              if (
-                this.timer.sessions %
-                  this.timer.longBreakInterval ===
-                0
-              ) {
+              if (this.timer.sessions % this.timer.longBreakInterval === 0) {
                 this.switchMode('longBreak')
               } else {
                 this.switchMode('shortBreak')
@@ -346,9 +315,7 @@ window.onload = () => {
             default:
               this.switchMode('pomodoro')
               new Notification('Get back to work!')
-              document
-                .querySelector(`[data-sound="${this.timer.mode}"]`)
-                .play()
+              document.querySelector(`[data-sound="${this.timer.mode}"]`).play()
               this.stopTimer()
               return
           }
@@ -361,9 +328,7 @@ window.onload = () => {
             new Notification(text)
           }
 
-          document
-            .querySelector(`[data-sound="${this.timer.mode}"]`)
-            .play()
+          document.querySelector(`[data-sound="${this.timer.mode}"]`).play()
 
           this.startTimer()
         }
@@ -380,17 +345,11 @@ window.onload = () => {
         if (!this.interval) {
           const data = new Date(this.timer.endsIn) //
           data.setTime(data.getTime() + 1000) //
-          this.timer.balanceTime.balance =
-            this.timer.balanceTime.balance_ - 1
-          if (
-            containerTimer.getAttribute('mode') !== this.timer.mode
-          ) {
+          this.timer.balanceTime.balance = this.timer.balanceTime.balance_ - 1
+          if (containerTimer.getAttribute('mode') !== this.timer.mode) {
             this.showEndsIn(1000, true, true)
             this.showEndsIn(
-              1000 +
-                this.timer[
-                  containerTimer.getAttribute('mode') + 'Ms'
-                ]
+              1000 + this.timer[containerTimer.getAttribute('mode') + 'Ms'],
             )
           } else {
             this.showEndsIn(1000, true)
@@ -414,13 +373,10 @@ window.onload = () => {
       sec.textContent = seconds
 
       const text =
-        this.timer.mode === 'pomodoro'
-          ? 'Get back to work!'
-          : 'Take a break!'
+        this.timer.mode === 'pomodoro' ? 'Get back to work!' : 'Take a break!'
       document.title = `${minutes}:${seconds} — ${text}`
       const tempoCorridoEmSegundos =
-        this.timer[this.timer.mode] * 60 -
-        this.timer.remainingTime.total
+        this.timer[this.timer.mode] * 60 - this.timer.remainingTime.total
       this.timer.elapsedTimeInSeconds = tempoCorridoEmSegundos
       const progress = document.getElementById('js-progress')
       progress.value = tempoCorridoEmSegundos
@@ -433,39 +389,32 @@ window.onload = () => {
         seconds: 0,
       }
       if (!update) {
+        console.log('passei pelo !update')
         document
           .querySelectorAll('i[data-mode]')
           .forEach((e) => e.classList.remove('active'))
-        document
-          .querySelector(`[data-mode="${mode}"]`)
-          .classList.add('active')
-        srcBackground.setAttribute(
-          'src',
-          `/assets/video/${mode}.mp4`
-        )
+        document.querySelector(`[data-mode="${mode}"]`).classList.add('active')
+        srcBackground.setAttribute('src', `/assets/video/${mode}.mp4`)
         containerTimer.setAttribute('class', `timer_${mode}`)
         containerTimer.setAttribute('mode', mode)
         myVideo.load()
       } else {
+        console.log('passei pelo else update')
         containerTimer.setAttribute('breakRequired', 'false')
-        if (mode === 'pomodoro') {
-          mode !== this.timer.mode
-            ? this.showEndsIn(
-                -Math.abs(this.timer.pomodoroMs),
-                true
-              )
-            : this.showEndsIn()
-        }
-        if (mode === 'shortBreak') {
-          this.showEndsIn(this.timer.shortBreakMs, true)
-        }
-        if (mode === 'longBreak') {
-          this.showEndsIn(this.timer.longBreakMs, true)
-        }
-        if (mode === 'dinner') {
-          this.showEndsIn(this.timer.dinnerMs, true)
-
-          console.log('pasfsheofiusehfuoh')
+        if (mode === 'pomodoro' && this.timer.mode !== mode) {
+          console.log('yyyyyyyyyyyyyyyyyy')
+        } else {
+          switch (mode) {
+            case 'shortBreak':
+              this.showEndsIn(this.timer.shortBreakMs, true)
+              break
+            case 'longBreak':
+              this.showEndsIn(this.timer.longBreakMs, true)
+              break
+            case 'dinner':
+              this.showEndsIn(this.timer.dinnerMs, true)
+              break
+          }
         }
       }
 
@@ -479,6 +428,7 @@ window.onload = () => {
 
       //document.body.style.backgroundColor = `var(--${mode})`
       this.timer.mode = mode
+
       document
         .getElementById('js-progress')
         .setAttribute('max', this.timer.remainingTime.total)
@@ -506,9 +456,7 @@ window.onload = () => {
       document
         .querySelectorAll('i[data-mode]')
         .forEach((e) => e.classList.remove('active'))
-      document
-        .querySelector(`[data-mode="${mode}"]`)
-        .classList.add('active')
+      document.querySelector(`[data-mode="${mode}"]`).classList.add('active')
       srcBackground.setAttribute('src', `/assets/video/${mode}.mp4`)
       containerTimer.setAttribute('class', `timer_${mode}`)
       containerTimer.setAttribute('mode', mode)
@@ -519,6 +467,7 @@ window.onload = () => {
     skip() {
       let msTimerSkiped
       let elapsedTime = this.timer.elapsedTimeInSeconds
+      let elapsedTimeMs = this.timer.elapsedTimeInSeconds * 1000
       let isBreakRequired =
         containerTimer.getAttribute('breakRequired') === 'true'
       console.log(isBreakRequired)
@@ -527,27 +476,25 @@ window.onload = () => {
           this.timer.balanceTime.balance =
             this.timer.balanceTime.balance_ +
             (this.timer.shortBreak * 60 - elapsedTime)
-
-          msTimerSkiped = -Math.abs(elapsedTime * 1000)
+          console.log(elapsedTime)
         }
+        msTimerSkiped = -Math.abs(this.timer.shortBreakMs - elapsedTimeMs)
       } else if (this.timer.mode === 'longBreak') {
         if (isBreakRequired) {
           this.timer.balanceTime.balance =
             this.timer.balanceTime.balance_ +
             (this.timer.longBreak * 60 - elapsedTime)
-
-          msTimerSkiped = -Math.abs(elapsedTime * 1000)
         }
+        msTimerSkiped = -Math.abs(this.timer.longBreakMs - elapsedTimeMs)
       } else if (this.timer.mode === 'dinner') {
         if (isBreakRequired) {
           this.timer.balanceTime.balance =
             this.timer.balanceTime.balance_ +
             (this.timer.dinner * 60 - elapsedTime)
-
-          msTimerSkiped = -Math.abs(elapsedTime * 1000)
         }
+        msTimerSkiped = -Math.abs(this.timer.dinnerMs - elapsedTimeMs)
       }
-      console.log(msTimerSkiped)
+      console.log('tempo pulado em ms: ', msTimerSkiped)
       if (msTimerSkiped) this.showEndsIn(msTimerSkiped, true)
       mainButtonBtn.style.display = 'inline-block'
       skipBtn.style.display = 'none'
@@ -562,8 +509,7 @@ window.onload = () => {
 
       mainButton.addEventListener('click', () => {
         if (
-          containerTimer.getAttribute('class') !==
-          `timer_${this.timer.mode}`
+          containerTimer.getAttribute('class') !== `timer_${this.timer.mode}`
         ) {
           this.switchMode(containerTimer.getAttribute('mode'), true)
         }
@@ -599,18 +545,17 @@ window.onload = () => {
         task.addEventListener('click', function (e) {
           sdEdit1.play()
           const Pomodories = document.getElementById(
-            `tasksPomodories_${idTask}`
+            `tasksPomodories_${idTask}`,
           )
-          const Realized = document.getElementById(
-            `tasksRealized_${idTask}`
-          )
+          const Realized = document.getElementById(`tasksRealized_${idTask}`)
           const Session = task.getAttribute(`session_${idTask}`)
           working.innerHTML = task.firstElementChild.textContent
           working.setAttribute('_id', idTask)
-          workingPomodories.textContent =
-            Pomodories.textContent.replace(/\s/g, '')
-          workingRealized.textContent =
-            Realized.textContent.replace(/\s/g, '')
+          workingPomodories.textContent = Pomodories.textContent.replace(
+            /\s/g,
+            '',
+          )
+          workingRealized.textContent = Realized.textContent.replace(/\s/g, '')
           workingSession.value = Session
         })
       }
@@ -621,12 +566,10 @@ window.onload = () => {
             Notification.permission !== 'granted' &&
             Notification.permission !== 'denied'
           ) {
-            Notification.requestPermission().then(function (
-              permission
-            ) {
+            Notification.requestPermission().then(function (permission) {
               if (permission === 'granted') {
                 new Notification(
-                  'Awesome! You will be notified at the start of each session'
+                  'Awesome! You will be notified at the start of each session',
                 )
               }
             })
@@ -636,7 +579,7 @@ window.onload = () => {
     }
   }
 
-  //const pomodoro = new Pomodoro(1, 5, 15, 4)
-  const pomodoro = new Pomodoro()
+  const pomodoro = new Pomodoro(0.1, 2, 3, 4)
+  //const pomodoro = new Pomodoro()
   pomodoro.start()
 }
