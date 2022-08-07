@@ -1,0 +1,17 @@
+@import url("https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap");
+
+body {
+  background-color: rgb(33, 33, 33);
+  color: white !important;
+  margin: 0px;
+  padding: 0px;
+}
+
+.selector-for-some-widget {
+  box-sizing: content-box;
+}
+
+container {
+  align-items: center;
+  justify-content: center;
+}

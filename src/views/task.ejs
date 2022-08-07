@@ -1,0 +1,33 @@
+<%- include('./includes/head')%>
+<%- include('./includes/navbar.ejs') %>
+<link type="text/css" rel="stylesheet" href="/assets/css/task.css">
+</head>
+
+<body>
+  <div class="row w-100 m-0">
+    <div class="col my-3">
+      <h1 class="text-center">Crie seu task</h1>
+      <%- include('./includes/messages.ejs')%>
+
+    </div>
+  </div>
+  <% if(task){ %>
+  <form action="/task/update/<%=task._id%>" method="post">
+    <% } %>
+    <form action="/task/register" method="post">
+      <input type="hidden" name="_csrf" value="<%- csrfToken %>">
+      <div class="form-group">
+        <label for="exampleInputEmail1">Nome</label>
+        <input <% if(task){ %> value="<%= task.task %>" <% } %> type="text" name="task" class="form-control"
+          id="exampleInputEmail1" aria-describedby="emailHelp">
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1">Pomodories</label>
+        <input <% if(task){ %> value="<%= task.pomodories %>" <% } %> type="text" class="form-control" name="pomodories"
+          id="exampleInputPassword1">
+      </div>
+      <button type="submit" class="btn btn-dark">Cadastrar</button>
+    </form>
+
+    <%- include('./includes/footer') %>
+    <link rel="stylesheet" href="/assets/css/task.css">

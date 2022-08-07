@@ -1,0 +1,12 @@
+<% Controle de fluxo (if, for, while) %>
+<%= Não aceita HTML %>
+<%- Aceita HTML %>
+<%- include('Caminho') %>
+<%# Comentario %>
+
+#EXEMPLE
+<% if (algumaCoisa) {%>
+<h1> sim </h1>
+<% } else { %>
+<h1> não </h1>
+<% } %>

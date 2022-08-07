@@ -1,0 +1,224 @@
+<%- include('./includes/head')%>
+<link type="text/css" rel="stylesheet" href="/assets/css/home.css">
+<% if(js) {%>
+<%- js %>
+<% } %>
+<% if (css)  {%>
+<%- css %>
+<% } %>
+</head>
+<span%# include('./includes/navbar.ejs') %>
+
+  <body>
+    <div class="scanlines">
+    </div> <!-- nao apagar -->
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content bg-dark">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body ">
+            <table>
+              <thead>
+                <tr>
+                  <th>Task</th>
+                  <th>Pomodories</th>
+                </tr>
+              </thead>
+              <tbody id="tasks" style="font-size: 20px;">
+                <% tasks.forEach(tasks => { %>
+                <tr tasksRealized_<%- tasks._id %>="<%= tasks.todayRealized %>"
+                  tasksPomodories_<%- tasks._id %>="<%= tasks.pomodories %>" class="task" _id="<%- tasks._id %>"
+                  session_<%- tasks._id %>="<%- tasks.session %>" <% if(tasks.isDiary){ %> isDiary="yes" <% } else { %>
+                  isDiary="no" <%}%> >
+                 <td class="taskName">
+                <%= tasks.task %> </td>
+                  <td>
+                    <span id="tasksRealized_<%- tasks._id %>">
+                      <%= tasks.todayRealized %>
+                    </span>
+                    /
+                    <span id="tasksPomodories_<%- tasks._id %>">
+                      <%= tasks.pomodories %>
+                    </span>
+                  </td>
+                  <td>
+                    <a class="text-danger" target="deletePomodorie" href="/task/delete/<%= tasks._id %> ">
+                      Excluir
+                    </a>
+                  </td>
+                </tr>
+                <% }) %>
+              </tbody>
+            </table>
+            <hr>
+            <form class="form_register" action="/task/register" method="post" target="registrar_pomodoro">
+              <input type="hidden" name="_csrf" value="<%- csrfToken %>">
+              <div class="form-group">
+                <label for="exampleInputEmail1">Nome</label>
+                <input <% if(task){ %> value="<%= task.task %>" <% } %> type="text" name="task" class="form-control"
+                  id="exampleInputEmail1" aria-describedby="emailHelp">
+              </div>
+              <div class="form-group">
+                <label for="exampleInputPassword2">Pomodories</label>
+                <input <% if(task){ %> value="<%= task.pomodories %>" <% } %> type="text" class="form-control"
+                  name="pomodories" id="exampleInputPassword2">
+              </div>
+              <div class="form-switch">
+                <input class="form-group form-check-input" type="checkbox" name="isDiary" id="exampleInputPassword3">
+                <label class="form-group form-check-label" for="exampleInputPassword3">isDiary</label>
+              </div>
+              <button type="submit" class="btn btn-dark">Cadastrar</button>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" id="btnResetPomodorie" class="btn btn-primary">reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- VISIVEL -->
+    <div class="intro-wrap">
+      <video muted loop id="myVideo">
+        <source muted loop id="srcBackground" src="/assets/video/pomodoro.mp4" type="video/mp4">
+      </video>
+      <main class="app">
+        <progress id="js-progress" value="0"></progress>
+        <div class="progress-bar"></div>
+        <div id="container_timer" class="timer_pomodoro">
+          <span id="currentStatus">
+            <span id="workingRealized">&lt;</span>
+            <span>/</span>
+            <span id="workingPomodories">&gt;</span>
+            <input id="workingSession" style="display: none;"></input>
+          </span>
+          <!-- button controller -->
+          <div class="main-timer">
+            <div class="button-group mode-buttons js-mode-buttons">
+              <i data-mode="pomodoro" class="material-icons" style="font-size: 50px;" id="js-pomodoro">
+                check_circle
+              </i>
+              <i data-mode="longBreak" class="material-icons" style="font-size: 36px;" id="js-long-break">
+                trip_origin
+              </i>
+              <i data-mode="shortBreak" class="material-icons" style="font-size: 30px;" id="js-short-break">
+                radio_button_unchecked
+              </i>
+            </div>
+            <div class="js-mode-buttons2">
+              <i data-mode="longBreak" class="material-icons" style="font-size: 40px;">
+                local_cafe
+              </i>
+              <i data-mode="dinner" class="material-icons" style="font-size: 40px;">
+                restaurant
+              </i>
+            </div>
+            <div class='endIn' style="">
+              <span id="timerEndIn">
+                <span id="timerEndInHour">
+                </span>
+                :
+                <span id="timerEndInMinutes">
+                </span>
+                <span id="timerEndInSession" style="margin-left: 5px;">
+                </span>
+              </span>
+            </div>
+            <div class="clock" id="js-clock" style="align-self: flex-end;">
+              <span class="time" id="js-minutes">25</span>
+              <span class="separator">:</span>
+              <span class="time" id="js-seconds">00</span>
+            </div>
+            <!-- style="color: rgba(0, 0, 0, 0);" -->
+            <div class="balanceTime">
+              <span id="balanceNegative">-</span>
+              <span id="balancePositive">-</span>
+            </div>
+          </div>
+
+          <div class="footer_timer">
+            <div class="containerBtn">
+              <button class="main-button custom-btn" data-action="start" id="js-btn"><span>start</span></button>
+              <button style="display: none;" class="main-button custom-btn" id="skipBtn"><span>Skip</span></button>
+            </div>
+            <span id="working">Estudar programação</span>
+            <button id="btnTasks" type="button" class="btn btn-dark" data-bs-toggle="modal"
+              data-bs-target="#exampleModalLong">
+              Tasks
+            </button>
+          </div>
+
+        </div>
+
+
+      </main>
+      <iframe name="updatePomodorie" style="display:none;"></iframe>
+      <form style="display:none;" id="updatePomodorie" action="/task/updatePomodorie" method="post"
+        target="updatePomodorie">
+        <input type="submit" value="updatePomodorie">
+        <input id="updatePomodorieInput" type="text" name="id" value="">
+      </form>
+      <iframe name="resetPomodories" style="display:none;"></iframe>
+      <form style="display:none;" id="resetPomodories" action="/task/resetPomodories" method="post"
+        target="resetPomodories">
+        <input type="submit" value="resetPomodories">
+        <input id="resetPomodorieInput" type="text" name="id" value="">
+      </form>
+      <iframe name="deletePomodories" style="display:none;"></iframe>
+      <form style="display:none;" id="deletePomodories" action="/task/deletePomodories" method="post"
+        target="deletePomodories">
+        <input type="submit" value="deletePomodories">
+        <input id="deletePomodorieInput" type="text" name="id" value="">
+      </form>
+      <iframe name="addTodayPomodorie" style="display:none;"></iframe>
+      <form style="display:none;" id="addTodayPomodorie" action="/task/addTodayPomodorie" method="post"
+        target="addTodayPomodorie">
+        <input type="submit" value="addTodayPomodorie">
+        <input id="addTodayPomodorieInput" type="text" name="id" value="">
+      </form>
+      <iframe name="registrar_pomodoro" style="display:none;"></iframe>
+      <!-- Button trigger modal -->
+
+    </div>
+
+    <!-- <main class="app">
+    <progress id="js-progress" value="0"></progress>
+    <div class="progress-bar"></div>
+    <div class="timer">
+      <div class="button-group mode-buttons" id="js-mode-buttons">
+        <button data-mode="pomodoro" class="button active mode-button" id="js-pomodoro">
+          Pomodoro
+        </button>
+        <button data-mode="shortBreak" class="button mode-button" id="js-short-break">
+          Short break
+        </button>
+        <button data-mode="longBreak" class="button mode-button" id="js-long-break">
+          Long break
+        </button>
+      </div>
+      <div class="clock" id="js-clock">
+        <span id="js-minutes">25</span>
+        <span class="separator">:</span>
+        <span id="js-seconds">00</span>
+      </div>
+      <button class="main-button" data-action="start" id="js-btn">
+        Start
+      </button>
+    </div>
+  </main> -->
+    <!-- ### Iframes ### -->
+    <!-- visivel -->
+    <div class="hidden">
+      <audio src="/assets/songs/harleyQuinn/voce_precisa_voltar_docinho.wav" data-sound="pomodoro"></audio>
+      <audio src="/assets/songs/harleyQuinn/Que_tal_uma_pausa_docinho.wav" data-sound="shortBreak"></audio>
+      <audio src="/assets/songs/harleyQuinn/Que_tal_uma_pausa_mais_longa_docinho.wav" data-sound="longBreak"></audio>
+    </div>
+
+    <%- include('./includes/footer') %>
