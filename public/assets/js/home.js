@@ -50,6 +50,8 @@ window.onload = () => {
   const containerTimer = document.getElementById('container_timer')
   const balancePostive = document.getElementById('balancePositive')
   const balanceNegative = document.getElementById('balanceNegative')
+  const up_pomodorie = document.getElementsByClassName('up-pomodorie')
+
   class Pomodoro {
     interval
     timer
@@ -534,11 +536,16 @@ window.onload = () => {
       btnResetPomodories.addEventListener('click', () => {
         this.resetPomodories()
         sdEdit2.play()
-      })
+      }) //this.addTodayPomodorie()
       skipBtn.addEventListener('click', () => {
         sdBtnSkip.play()
         this.skip()
       })
+      for (let up of up_pomodorie) {
+        up.addEventListener('click', () => {
+          this.addTodayPomodorie()
+        })
+      }
 
       for (let task of tasks) {
         const idTask = task.getAttribute('_id')
@@ -579,7 +586,7 @@ window.onload = () => {
     }
   }
 
-  const pomodoro = new Pomodoro(0.1, 2, 3, 4)
-  //const pomodoro = new Pomodoro()
+  //const pomodoro = new Pomodoro(0.1, 2, 3, 4)
+  const pomodoro = new Pomodoro()
   pomodoro.start()
 }
